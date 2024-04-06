@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import './Table.css'; // 外部のCSSファイルをインポート
+import { mdiCog } from '@mdi/js';
+import Icon from '@mdi/react';
 
 function NiaDora() {
+  const [showSettings, setShowSettings] = useState(false);
+  const handleSettingsClick = () => {
+    setShowSettings(!showSettings);
+  };
+
   // メモ
   // オリンピックスコアは18要素の配列として扱う。
   // ニアドラスコアは8要素の配列として扱う。（ニア1~4,ドラ1~4）
@@ -12,8 +19,33 @@ function NiaDora() {
     { name: 'Player 4', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 }
   ]);
 
-  const oriRate = 300;
-  const niadoraRate = 500;
+  const [oriRate, setOriRate] = useState(200);
+  const [niadoraRate, setNiadoraRate] = useState(500);
+  // const oriRate = 300;
+  // const niadoraRate = 500;
+
+  // oriRateを更新する関数
+  const updateOriRate = (e) => {
+    const value = e.target.value;
+    // 入力が空の場合や数字以外の文字列が含まれている場合は変更しない
+    if (!value || isNaN(value)) {
+      return;
+    }
+    setOriRate(parseInt(value, 10)); // テキストボックスの値を数値に変換して更新
+    // reCalc(players);
+  }
+
+  // niadoraRateを更新する関数
+  const updateNiadoraRate = (e) => {
+    const value = e.target.value;
+    // 入力が空の場合や数字以外の文字列が含まれている場合は変更しない
+    if (!value || isNaN(value)) {
+      return;
+    }
+    setNiadoraRate(parseInt(value, 10)); // テキストボックスの値を数値に変換して更新
+    // reCalc(players);
+  }
+
 
   // オリンピックの合計スコアを計算する関数
   const calculateTotalOriScore = (playerOriScores) => {
@@ -64,14 +96,68 @@ function NiaDora() {
     setPlayers(newPlayers);
   };
 
+  // // ソシーの再計算（主にレート変更時など）
+  // const reCalc = (players) => {
+  //   const newPlayers = [...players];
+  //   for (let i = 0; i < newPlayers.length; i++) {
+  //     newPlayers[i].oriSoshy = calculateOriScore(newPlayers, i) * oriRate;
+  //     newPlayers[i].niadoraSoshy = calculateTotalNiadoraScore(newPlayers[i].niadoraScores) * niadoraRate;
+  //   }
+  //   setPlayers(newPlayers);
+  // }
+
   return (
     <div>
+      {/* 画面の右上に設定ボタンを追加 */}
+      <div style={{ position: 'fixed', top: 10, right: 10 }}>
+        <button onClick={handleSettingsClick}>
+          <Icon path={mdiCog} size={1} />
+        </button>
+      </div>
+
+      {/* 設定画面 */}
+      {showSettings && (
+        <div style={{ position: 'fixed', top: 50, right: 10, backgroundColor: 'white', padding: 10 }}>
+          <h2>Settings</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>設定項目</th>
+                <th>設定値</th>
+              </tr>
+            </thead>
+            <tbody>
+              {players.map((player, playerIndex) => (
+              <tr key={playerIndex}>
+                <td>Player {playerIndex + 1}</td>
+                <td>
+                  <input
+                    type='text'
+                    value={player.name}
+                    onChange={(e) => updatePlayerName(playerIndex, e.target.value)}
+                    style={{ width: '100px' }}
+                  />
+                </td>
+              </tr>
+              ))}
+              <tr>
+                <td>ニアドラレート</td>
+                <td><input type="text" value={niadoraRate} onChange={updateNiadoraRate}/></td>
+              </tr>
+              <tr>
+                <td>オリレート</td>
+                <td><input type="text" value={oriRate} onChange={updateOriRate}/></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
       <div className='table-container'>
         <table>
           <thead>
             <tr>
-              <th></th>
-              {players.map((player, playerIndex) => (
+              <th style={{ width: '80px' }}></th>
+              {/* {players.map((player, playerIndex) => (
                 <th key={playerIndex} style={{ width: '100px' }}>
                   <input
                     type='text'
@@ -80,6 +166,9 @@ function NiaDora() {
                     style={{ width: '100px' }}
                   />
                 </th>
+              ))} */}
+              {players.map((player, playerIndex) => (
+                <th key={playerIndex} style={{ width: '100px' }}>{player.name}</th>
               ))}
             </tr>
           </thead>
