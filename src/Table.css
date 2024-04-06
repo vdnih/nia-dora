@@ -1,29 +1,20 @@
-.table-container {
-    overflow-x: auto; /* 横スクロールを有効にする */
-  }
-  
-  .fixed-column {
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    background-color: white; /* 固定列の背景色を設定 */
-  }
-  
-  .scrollable-content {
-    overflow-x: auto; /* 横スクロールを有効にする */
-  }
-  
-  /* 固定列のスタイル */
-  .fixed-column td,
-  .fixed-column th {
-    position: sticky;
-    left: 0;
-    background-color: white; /* 固定列の背景色を設定 */
-  }
-  
-  /* 先頭行のスタイル */
-.fixed-row th {
+.table-container thead th {
+  /* 縦スクロール時に固定する */
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  background-color: white; /* 先頭行の背景色を設定 */
+  /* tbody内のセルより手前に表示する */
+  z-index: 1;
+}
+
+.table-container th:first-child {
+  /* 横スクロール時に固定する */
+  position: -webkit-sticky;
+  position: sticky;
+  left: 0;
+}
+
+.table-container thead th:first-child {
+  /* ヘッダー行内の他のセルより手前に表示する */
+  z-index: 2;
 }

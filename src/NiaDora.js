@@ -6,10 +6,10 @@ function NiaDora() {
   // オリンピックスコアは18要素の配列として扱う。
   // ニアドラスコアは8要素の配列として扱う。（ニア1~4,ドラ1~4）
   const [players, setPlayers] = useState([
-    { name: 'Player 1', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0},
-    { name: 'Player 2', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0},
-    { name: 'Player 3', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0},
-    { name: 'Player 4', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0}
+    { name: 'Player 1', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 },
+    { name: 'Player 2', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 },
+    { name: 'Player 3', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 },
+    { name: 'Player 4', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 }
   ]);
 
   const oriRate = 300;
@@ -37,21 +37,11 @@ function NiaDora() {
     return oriOriScore;
   };
 
-  // ニアドラのスコアを計算する関数
-  const calculateNiadoraScore = (players, playerIndex) => {
-    // 全プレイヤーの合計スコア
-    const totalOriScores = players.map((player) => calculateTotalOriScore(player.oriScores));
-    const totalOriScoreOfAllPlayers = totalOriScores.reduce((acc, cur) => acc + cur, 0);
-    const totalOriScoreOfPlayer = totalOriScores[playerIndex];
-    const oriOriScore = totalOriScoreOfPlayer * 4 - totalOriScoreOfAllPlayers;
-    return oriOriScore;
-  };
-
   // オリンピックスコアを更新する関数
   const updateOriScore = (playerIndex, holeIndex, value) => {
     const newPlayers = [...players];
     newPlayers[playerIndex].oriScores[holeIndex] = value;
-    for(let i = 0; i < newPlayers.length; i++){
+    for (let i = 0; i < newPlayers.length; i++) {
       newPlayers[i].oriSoshy = calculateOriScore(newPlayers, i) * oriRate;
     }
     // newPlayers[playerIndex].oriSoshy = calculateOriScore(newPlayers, playerIndex) * oriRate;
@@ -79,8 +69,8 @@ function NiaDora() {
       <div className='table-container'>
         <table>
           <thead>
-            <tr className='fixed-row'>
-              <th className='fixed-column'></th>{/* 一番左の列を固定 */}
+            <tr>
+              <th></th>
               {players.map((player, playerIndex) => (
                 <th key={playerIndex} style={{ width: '100px' }}>
                   <input
@@ -94,10 +84,10 @@ function NiaDora() {
             </tr>
           </thead>
           <tbody className="scrollable-content">
-          <tr><td colSpan="5">ニアピン</td></tr>
+            <tr><td colSpan="5">ニアピン</td></tr>
             {[...Array(4)].map((_, holeIndex) => (
               <tr key={holeIndex}>
-                <td className="fixed-column">ﾆｱ{holeIndex + 1}</td>
+                <td>ﾆｱ{holeIndex + 1}</td>
                 {players.map((player, playerIndex) => (
                   <td key={playerIndex}>
                     <select
@@ -114,13 +104,13 @@ function NiaDora() {
             ))}
             <tr><td colSpan="5">ドラコン</td></tr>
             {[...Array(4)].map((_, holeIndex) => (
-              <tr key={holeIndex+4}>
-                <td className="fixed-column">ﾆｱ{holeIndex + 1}</td>
+              <tr key={holeIndex + 4}>
+                <td>ﾆｱ{holeIndex + 1}</td>
                 {players.map((player, playerIndex) => (
                   <td key={playerIndex}>
                     <select
-                      value={player.niadoraScores[holeIndex+4]}
-                      onChange={(e) => updateNiadoraScore(playerIndex, holeIndex+4, e.target.value)}
+                      value={player.niadoraScores[holeIndex + 4]}
+                      onChange={(e) => updateNiadoraScore(playerIndex, holeIndex + 4, e.target.value)}
                     >
                       {[6, 4, 3, 2, 0, -2, -3, -4, -6].map((niadoraScore) => (
                         <option key={niadoraScore} value={niadoraScore}>{niadoraScore}</option>
@@ -132,7 +122,7 @@ function NiaDora() {
             ))}
             {/* ソシー計算結果を追加 */}
             <tr>
-              <td className="fixed-column">ﾆｱﾄﾞﾗｿｼｰ</td>
+              <td>ﾆｱﾄﾞﾗｿｼｰ</td>
               {players.map((player, playerIndex) => (
                 <td key={playerIndex}>{player.niadoraSoshy} </td>
               ))}
@@ -140,7 +130,7 @@ function NiaDora() {
             <tr><td colSpan="5">オリンピック</td></tr>
             {[...Array(18)].map((_, holeIndex) => (
               <tr key={holeIndex}>
-                <td className="fixed-column">{holeIndex + 1}</td>
+                <td>{holeIndex + 1}</td>
                 {players.map((player, playerIndex) => (
                   <td key={playerIndex}>
                     <select
@@ -157,21 +147,21 @@ function NiaDora() {
             ))}
             {/* 合計行を追加 */}
             <tr>
-              <td className="fixed-column">ｵﾘｶｳﾝﾄ</td>
+              <td>ｵﾘｶｳﾝﾄ</td>
               {players.map((player, playerIndex) => (
                 <td key={playerIndex}>{calculateTotalOriScore(player.oriScores)}</td>
               ))}
             </tr>
             {/* オリンピックのスコアを追加 */}
             <tr>
-              <td className="fixed-column">ｵﾘｽｺｱ</td>
+              <td>ｵﾘｽｺｱ</td>
               {players.map((player, playerIndex) => (
                 <td key={playerIndex}>{calculateOriScore(players, playerIndex)}</td>
               ))}
             </tr>
             {/* ソシー計算結果を追加 */}
             <tr>
-              <td className="fixed-column">ｵﾘｿｼｰ</td>
+              <td>ｵﾘｿｼｰ</td>
               {players.map((player, playerIndex) => (
                 // <td key={playerIndex}>{calculateOriScore(players, playerIndex) * oriRate} </td>
                 <td key={playerIndex}>{player.oriSoshy} </td>
@@ -180,12 +170,11 @@ function NiaDora() {
             {/* 最終的な計算結果 */}
             <tr><td colSpan="5">ニアドラ・オリンピック合計</td></tr>
             <tr>
-              <td className="fixed-column">最終</td>
+              <td>最終</td>
               {players.map((player, playerIndex) => (
                 <td key={playerIndex}>{player.oriSoshy + player.niadoraSoshy} </td>
               ))}
             </tr>
-
           </tbody>
         </table>
       </div>
