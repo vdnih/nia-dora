@@ -1,0 +1,23 @@
+.table-container {
+    overflow-x: auto; /* 横スクロールを有効にする */
+  }
+  
+  .fixed-column {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background-color: white; /* 固定列の背景色を設定 */
+  }
+  
+  .scrollable-content {
+    overflow-x: auto; /* 横スクロールを有効にする */
+  }
+  
+  /* 固定列のスタイル */
+  .fixed-column td,
+  .fixed-column th {
+    position: sticky;
+    left: 0;
+    background-color: white; /* 固定列の背景色を設定 */
+  }
+  

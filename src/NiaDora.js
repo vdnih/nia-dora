@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Table.css'; // 外部のCSSファイルをインポート
 
 function NiaDora() {
   const [players, setPlayers] = useState([
@@ -24,7 +25,7 @@ function NiaDora() {
     const olympicScore = totalScoreOfPlayer * 4 - totalScoreOfAllPlayers;
     return olympicScore;
   };
-  
+
 
   // スコアを更新する関数
   const updateScore = (playerIndex, holeIndex, value) => {
@@ -43,62 +44,65 @@ function NiaDora() {
   return (
     <div>
       <h1>オリンピック</h1>
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            {players.map((player, playerIndex) => (
-              <th key={playerIndex}>
-                <input
-                  type='text'
-                  value={player.name}
-                  onChange={(e) => updatePlayerName(playerIndex, e.target.value)}
-                />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {[...Array(18)].map((_, holeIndex) => (
-            <tr key={holeIndex}>
-              <td>{holeIndex + 1}</td>
+      <div className='table-container'>
+        <table>
+          <thead>
+            <tr>
+              <th className='fixed-column'></th>{/* 一番左の列を固定 */}
               {players.map((player, playerIndex) => (
-                <td key={playerIndex}>
-                  <select
-                    value={player.scores[holeIndex]}
-                    onChange={(e) => updateScore(playerIndex, holeIndex, e.target.value)}
-                  >
-                    {[0,1,2,3,4,5].map((score) => (
-                      <option key={score} value={score}>{score}</option>
-                    ))}
-                  </select>
-                </td>
+                <th key={playerIndex} style={{ width: '100px' }}>
+                  <input
+                    type='text'
+                    value={player.name}
+                    onChange={(e) => updatePlayerName(playerIndex, e.target.value)}
+                    style={{ width: '100px' }}
+                  />
+                </th>
               ))}
             </tr>
-          ))}
-          {/* 合計行を追加 */}
-          <tr>
-            <td>合計</td>
-            {players.map((player, playerIndex) => (
-              <td key={playerIndex}>{calculateTotalScore(player.scores)}</td>
+          </thead>
+          <tbody className="scrollable-content">
+            {[...Array(18)].map((_, holeIndex) => (
+              <tr key={holeIndex}>
+                <td className="fixed-column">{holeIndex + 1}</td>
+                {players.map((player, playerIndex) => (
+                  <td key={playerIndex}>
+                    <select
+                      value={player.scores[holeIndex]}
+                      onChange={(e) => updateScore(playerIndex, holeIndex, e.target.value)}
+                    >
+                      {[0, 1, 2, 3, 4, 5].map((score) => (
+                        <option key={score} value={score}>{score}</option>
+                      ))}
+                    </select>
+                  </td>
+                ))}
+              </tr>
             ))}
-          </tr>
-          {/* オリンピックのスコアを追加 */}
-          <tr>
-            <td>オリンピックのスコア</td>
-            {players.map((player, playerIndex) => (
-              <td key={playerIndex}>{calculateOlympicScore(players, playerIndex)}</td>
-            ))}
-          </tr>
-          {/* ソシー計算結果を追加 */}
-          <tr>
-            <td>ソシーの計算結果</td>
-            {players.map((player, playerIndex) => (
-              <td key={playerIndex}>{calculateOlympicScore(players, playerIndex) * rate} </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
+            {/* 合計行を追加 */}
+            <tr>
+              <td className="fixed-column">合計</td>
+              {players.map((player, playerIndex) => (
+                <td key={playerIndex}>{calculateTotalScore(player.scores)}</td>
+              ))}
+            </tr>
+            {/* オリンピックのスコアを追加 */}
+            <tr>
+              <td className="fixed-column">ｵﾘ</td>
+              {players.map((player, playerIndex) => (
+                <td key={playerIndex}>{calculateOlympicScore(players, playerIndex)}</td>
+              ))}
+            </tr>
+            {/* ソシー計算結果を追加 */}
+            <tr>
+              <td className="fixed-column">ｿｼｰ</td>
+              {players.map((player, playerIndex) => (
+                <td key={playerIndex}>{calculateOlympicScore(players, playerIndex) * rate} </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
