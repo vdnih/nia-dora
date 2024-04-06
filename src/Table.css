@@ -21,3 +21,9 @@
     background-color: white; /* 固定列の背景色を設定 */
   }
   
+  /* 先頭行のスタイル */
+.fixed-row th {
+  position: sticky;
+  top: 0;
+  background-color: white; /* 先頭行の背景色を設定 */
+}
