@@ -13,16 +13,19 @@ function NiaDora() {
   // オリンピックスコアは18要素の配列として扱う。
   // ニアドラスコアは8要素の配列として扱う。（ニア1~4,ドラ1~4）
   const [players, setPlayers] = useState([
-    { name: 'Player 1', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 },
-    { name: 'Player 2', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 },
-    { name: 'Player 3', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 },
-    { name: 'Player 4', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 }
+    { name: 'Player 1', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 , otherSoshy: 0},
+    { name: 'Player 2', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 , otherSoshy: 0},
+    { name: 'Player 3', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 , otherSoshy: 0},
+    { name: 'Player 4', oriScores: Array(18).fill(0), oriSoshy: 0, niadoraScores: Array(8).fill(0), niadoraSoshy: 0 , otherSoshy: 0}
   ]);
 
   const [oriRate, setOriRate] = useState(200);
-  const [niadoraRate, setNiadoraRate] = useState(500);
+  const [niadoraRate, setNiadoraRate] = useState(100);
   // const oriRate = 300;
   // const niadoraRate = 500;
+
+  const [transactions, setTransactions] = useState([]);
+  // const [transactions] = useState(["abc", "def", "ghi"]);
 
   // oriRateを更新する関数
   const updateOriRate = (e) => {
@@ -88,6 +91,17 @@ function NiaDora() {
     setPlayers(newPlayers);
   };
 
+  // 補正ソシーを更新する関数
+  const updateOtherSoshy = (playerIndex, value) => {
+    // 入力が空の場合や数字以外の文字列が含まれている場合は変更しない
+    if (!value || isNaN(value)) {
+      return;
+    }
+    const newPlayers = [...players];
+    newPlayers[playerIndex].otherSoshy = parseInt(value, 10); // テキストボックスの値を数値に変換して更新
+    setPlayers(newPlayers);
+  };
+
 
   // プレイヤー名を更新する関数
   const updatePlayerName = (playerIndex, newName) => {
@@ -96,7 +110,7 @@ function NiaDora() {
     setPlayers(newPlayers);
   };
 
-  // // ソシーの再計算（主にレート変更時など）
+  // ソシーの再計算（主にレート変更時など）
   // const reCalc = (players) => {
   //   const newPlayers = [...players];
   //   for (let i = 0; i < newPlayers.length; i++) {
@@ -105,6 +119,73 @@ function NiaDora() {
   //   }
   //   setPlayers(newPlayers);
   // }
+
+  // 割り勘の計算
+  const calcTransactions = (e) => {
+    const totalSoshies = []
+    let tmpTotalSoshy = 0
+    for (let i = 0; i < players.length; i++) {
+      totalSoshies.push({
+        id : i,
+        totalSoshy : players[i].oriSoshy + players[i].niadoraSoshy + players[i].otherSoshy
+      })
+      tmpTotalSoshy += totalSoshies[i].totalSoshy
+    }
+    if (tmpTotalSoshy !== 0){
+      console.log("合計が0ではありません。")
+    }
+    // 多く払った人と少なく払った人のリストを作成
+    const overpaid = [];
+    const underpaid = [];
+    totalSoshies.forEach((player, i) => {
+      if (player.totalSoshy > 0) {
+        overpaid.push({ id: i, amount: player.totalSoshy });
+      } else {
+        underpaid.push({ id: i, amount: -player.totalSoshy });
+      }
+    });
+
+    // 誰が誰に対していくら払うべきかを計算
+    const transactions = [];
+    let i = 0; // underpaidのインデックス
+    let j = 0; // overpaidのインデックス
+
+    while (i < underpaid.length && j < overpaid.length) {
+      const under = underpaid[i];
+      const over = overpaid[j];
+
+      // 支払い額の差を計算
+      const paymentAmount = Math.min(under.amount, over.amount);
+
+      // トランザクションを追加
+      transactions.push({
+        from: under.id,
+        to: over.id,
+        amount: paymentAmount
+      });
+
+      // 各リストの進行状況を更新
+      under.amount -= paymentAmount;
+      over.amount -= paymentAmount;
+
+      if (under.amount === 0) {
+        i++;
+      }
+      if (over.amount === 0) {
+        j++;
+      }
+    }
+    // 結果を表示
+    const transactionsTextList = []
+    transactions.forEach(({ from, to, amount }) => {
+      const transactionText = players[from].name + " → " + players[to].name + " : " + amount;
+      if (amount > 0) {
+        transactionsTextList.push(transactionText)
+      };
+      // transactionsTextList.push(transactionText)
+    });
+    setTransactions(transactionsTextList);
+  };
 
   return (
     <div>
@@ -183,7 +264,7 @@ function NiaDora() {
                       value={player.niadoraScores[holeIndex]}
                       onChange={(e) => updateNiadoraScore(playerIndex, holeIndex, e.target.value)}
                     >
-                      {[6, 4, 3, 2, 0, -2, -3, -4, -6].map((niadoraScore) => (
+                      {[30, 20, 15, 10, 0, -10, -15, -20, -30].map((niadoraScore) => (
                         <option key={niadoraScore} value={niadoraScore}>{niadoraScore}</option>
                       ))}
                     </select>
@@ -194,14 +275,14 @@ function NiaDora() {
             <tr><td colSpan="5">ドラコン</td></tr>
             {[...Array(4)].map((_, holeIndex) => (
               <tr key={holeIndex + 4}>
-                <td>ﾆｱ{holeIndex + 1}</td>
+                <td>ﾄﾞﾗ{holeIndex + 1}</td>
                 {players.map((player, playerIndex) => (
                   <td key={playerIndex}>
                     <select
                       value={player.niadoraScores[holeIndex + 4]}
                       onChange={(e) => updateNiadoraScore(playerIndex, holeIndex + 4, e.target.value)}
                     >
-                      {[6, 4, 3, 2, 0, -2, -3, -4, -6].map((niadoraScore) => (
+                      {[30, 20, 15, 10, 0, -10, -15, -20, -30].map((niadoraScore) => (
                         <option key={niadoraScore} value={niadoraScore}>{niadoraScore}</option>
                       ))}
                     </select>
@@ -264,8 +345,35 @@ function NiaDora() {
                 <td key={playerIndex}>{player.oriSoshy + player.niadoraSoshy} </td>
               ))}
             </tr>
+            {/* その他補正 */}
+            <tr><td colSpan="5">その他補正</td></tr>
+            <tr>
+              <td>補正</td>
+              {players.map((player, playerIndex) => (
+                <td key={playerIndex}>
+                  <input 
+                    type="text" 
+                    value={player.otherSoshy}
+                    onChange={(e) => updateOtherSoshy(playerIndex, e.target.value)}
+                    style={{ width: '60px' }}
+                  />
+                </td>
+              ))}
+            </tr>
+            <tr>
+              <td>補正後</td>
+              {players.map((player, playerIndex) => (
+                <td key={playerIndex}>{player.oriSoshy + player.niadoraSoshy + player.otherSoshy} </td>
+              ))}
+            </tr>
           </tbody>
         </table>
+      </div>
+      <div>
+        <input type="button" value="ワリカ計算" onClick={calcTransactions}/>
+        {transactions.map((transaction, index) => (
+          <p key={index}>{transaction}</p>
+        ))}
       </div>
     </div>
   );
